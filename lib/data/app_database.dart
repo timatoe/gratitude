@@ -16,6 +16,13 @@ class AppDatabase extends _$AppDatabase {
 
   @override
   int get schemaVersion => 1;
+}
+
+@UseDao(tables: [Records])
+class RecordDao extends DatabaseAccessor<AppDatabase> with _$RecordDaoMixin {
+  final AppDatabase db;
+
+  RecordDao(this.db) : super(db);
 
   Future<List<Record>> getRecords() => select(records).get();
 

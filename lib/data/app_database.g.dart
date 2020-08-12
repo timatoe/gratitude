@@ -251,3 +251,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [records];
 }
+
+// **************************************************************************
+// DaoGenerator
+// **************************************************************************
+
+mixin _$RecordDaoMixin on DatabaseAccessor<AppDatabase> {
+  $RecordsTable get records => attachedDatabase.records;
+}
