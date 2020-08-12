@@ -1,6 +1,9 @@
 # gratitude
 
-A new Flutter project.
+A very simple gratitude journalling app 
+
+The app uses:
+moor 
 
 ## Getting Started
 
