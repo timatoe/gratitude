@@ -9,7 +9,7 @@ class GratitudeApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Provider(
-      create: (context) => AppDatabase(),
+      create: (context) => AppDatabase().recordDao,
       child: MaterialApp(
         home: RecordsScreen(),
         debugShowCheckedModeBanner: false,
