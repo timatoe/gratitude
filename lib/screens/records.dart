@@ -1,18 +1,15 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gratitude/bloc/record_bloc.dart';
 import 'package:gratitude/data/app_database.dart';
 import 'package:gratitude/screens/add_record.dart';
 import 'package:gratitude/styles.dart';
+import 'package:gratitude/widgets/loading_indicator.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
-class RecordsScreen extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() => _RecordsScreenState();
-}
-
-class _RecordsScreenState extends State<RecordsScreen> {
+class RecordsScreen extends StatelessWidget {
   final Color backgroundColor =
       Styles.backgroundColors[Random().nextInt(Styles.backgroundColors.length)];
 
@@ -24,9 +21,12 @@ class _RecordsScreenState extends State<RecordsScreen> {
         backgroundColor: backgroundColor,
         onPressed: () {
           showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              builder: (context) => AddRecordScreen());
+            context: context,
+            isScrollControlled: true,
+            builder: (_) => AddRecordScreen((record) {
+              BlocProvider.of<RecordBloc>(context)..add(RecordAdded(record));
+            }),
+          );
         },
         child: Icon(Icons.edit),
       ),
@@ -60,7 +60,19 @@ class _RecordsScreenState extends State<RecordsScreen> {
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
               ),
-              child: _buildRecordList(context),
+              child: BlocBuilder<RecordBloc, RecordState>(
+                builder: (context, state) {
+                  if (state is RecordLoading) {
+                    return LoadingIndicator();
+                  } else if (state is RecordLoadedSuccess) {
+                    return _buildList(context, state.records);
+                  } else if (state is RecordLoadedError) {
+                    return Center(child:Text('error'));
+                  } else {
+                    return Center(child:Text('unknown state'));
+                  }
+                },
+              ),
             ),
           )
         ],
@@ -68,19 +80,12 @@ class _RecordsScreenState extends State<RecordsScreen> {
     );
   }
 
-  StreamBuilder<List<Record>> _buildRecordList(BuildContext context) {
-    final recordDao = Provider.of<RecordDao>(context);
-    return StreamBuilder(
-      stream: recordDao.watchRecords(),
-      builder: (context, AsyncSnapshot<List<Record>> snapshot) {
-        final records = snapshot.data ?? List();
-        return ListView.builder(
-          itemCount: records.length,
-          itemBuilder: (_, index) {
-            final record = records[index];
-            return _buildListItem(record);
-          },
-        );
+  ListView _buildList(BuildContext context, List<Record> records) {
+    return ListView.builder(
+      itemCount: records.length,
+      itemBuilder: (_, index) {
+        final record = records[index];
+        return _buildListItem(record);
       },
     );
   }
@@ -103,17 +108,13 @@ class _RecordsScreenState extends State<RecordsScreen> {
                 Text(
                   "${DateFormat('dd/MM/yyyy').format(record.date)}: ",
                   style: TextStyle(
-                    color: backgroundColor,
-                    fontSize: 16.0, 
-                    fontWeight: FontWeight.w400
-                  ),
+                      color: backgroundColor,
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w400),
                 ),
                 Text(
                   record.gratefulFor,
-                  style: TextStyle(
-                    fontSize: 16.0, 
-                    fontWeight: FontWeight.w400
-                  ),
+                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w400),
                 ),
               ],
             ),

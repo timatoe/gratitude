@@ -3,10 +3,12 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gratitude/data/app_database.dart';
 import 'package:gratitude/styles.dart';
-import 'package:moor_flutter/moor_flutter.dart' hide Column;
-import 'package:provider/provider.dart';
 
 class AddRecordScreen extends StatefulWidget {
+  final Function addRecordCallback;
+
+  AddRecordScreen(this.addRecordCallback);
+
   @override
   State<StatefulWidget> createState() => _AddRecordScreenState();
 }
@@ -78,14 +80,12 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         ),
       ),
       onSubmitted: (value) {
-        final recordDao = Provider.of<RecordDao>(context, listen: false);
         final record = Record(
           id: null,
-          gratefulFor: value,
+          gratefulFor: textEditingController.text,
           date: DateTime.now(),
         );
-        print(record.toString());
-        recordDao.insertRecord(record);
+        widget.addRecordCallback(record);
         Navigator.pop(context);
       },
     );
@@ -96,16 +96,15 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
       child: Text('Save', style: TextStyle(color: Colors.white)),
       color: color,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-        side: BorderSide(color: color)
-      ),
+          borderRadius: BorderRadius.circular(20.0),
+          side: BorderSide(color: color)),
       onPressed: () {
-        final recordDao = Provider.of<RecordDao>(context, listen: false);
-        final record = RecordsCompanion(
-          gratefulFor: Value(textEditingController.text),
-          date: Value(DateTime.now()),
+        final record = Record(
+          id: null,
+          gratefulFor: textEditingController.text,
+          date: DateTime.now(),
         );
-        recordDao.insertRecord(record);
+        widget.addRecordCallback(record);
         Navigator.pop(context);
       },
     );
