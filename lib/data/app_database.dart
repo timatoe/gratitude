@@ -8,7 +8,7 @@ class Records extends Table {
   DateTimeColumn get date => dateTime()();
 }
 
-@UseMoor(tables: [Records])
+@UseMoor(tables: [Records], daos: [RecordDao])
 class AppDatabase extends _$AppDatabase {
   AppDatabase()
       : super((FlutterQueryExecutor.inDatabaseFolder(
@@ -25,10 +25,7 @@ class RecordDao extends DatabaseAccessor<AppDatabase> with _$RecordDaoMixin {
   RecordDao(this.db) : super(db);
 
   Future<List<Record>> getRecords() => select(records).get();
-
   Stream<List<Record>> watchRecords() => select(records).watch();
-
-  Future insertRecord(Record record) => into(records).insert(record);
-
-  Future updateRecord(Record record) => update(records).replace(record);
+  Future insertRecord(Insertable<Record> record) => into(records).insert(record);
+  Future updateRecord(Insertable<Record> record) => update(records).replace(record);
 }

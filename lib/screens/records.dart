@@ -69,23 +69,23 @@ class _RecordsScreenState extends State<RecordsScreen> {
   }
 
   StreamBuilder<List<Record>> _buildRecordList(BuildContext context) {
-    final database = Provider.of<AppDatabase>(context);
+    final recordDao = Provider.of<RecordDao>(context);
     return StreamBuilder(
-      stream: database.watchRecords(),
+      stream: recordDao.watchRecords(),
       builder: (context, AsyncSnapshot<List<Record>> snapshot) {
         final records = snapshot.data ?? List();
         return ListView.builder(
           itemCount: records.length,
           itemBuilder: (_, index) {
             final record = records[index];
-            return _buildListItem(record, database);
+            return _buildListItem(record);
           },
         );
       },
     );
   }
 
-  Widget _buildListItem(Record record, AppDatabase database) {
+  Widget _buildListItem(Record record) {
     return Padding(
       padding: EdgeInsets.fromLTRB(32.0, 16.0, 32.0, 0),
       child: Column(

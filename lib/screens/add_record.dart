@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:gratitude/data/app_database.dart';
 import 'package:gratitude/styles.dart';
+import 'package:moor_flutter/moor_flutter.dart' hide Column;
 import 'package:provider/provider.dart';
 
 class AddRecordScreen extends StatefulWidget {
@@ -77,14 +78,14 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
         ),
       ),
       onSubmitted: (value) {
-        final database = Provider.of<AppDatabase>(context, listen: false);
+        final recordDao = Provider.of<RecordDao>(context, listen: false);
         final record = Record(
           id: null,
           gratefulFor: value,
           date: DateTime.now(),
         );
         print(record.toString());
-        database.insertRecord(record);
+        recordDao.insertRecord(record);
         Navigator.pop(context);
       },
     );
@@ -95,17 +96,16 @@ class _AddRecordScreenState extends State<AddRecordScreen> {
       child: Text('Save', style: TextStyle(color: Colors.white)),
       color: color,
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-          side: BorderSide(color: color)),
+        borderRadius: BorderRadius.circular(20.0),
+        side: BorderSide(color: color)
+      ),
       onPressed: () {
-        final database = Provider.of<AppDatabase>(context, listen: false);
-        final record = Record(
-          id: null,
-          gratefulFor: textEditingController.text,
-          date: DateTime.now(),
+        final recordDao = Provider.of<RecordDao>(context, listen: false);
+        final record = RecordsCompanion(
+          gratefulFor: Value(textEditingController.text),
+          date: Value(DateTime.now()),
         );
-        print(record.toString());
-        database.insertRecord(record);
+        recordDao.insertRecord(record);
         Navigator.pop(context);
       },
     );
