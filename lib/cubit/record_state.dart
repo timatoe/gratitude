@@ -1,13 +1,13 @@
-part of 'record_bloc.dart';
+part of 'record_cubit.dart';
 
 abstract class RecordState extends Equatable {
   const RecordState();
+}
 
+class RecordLoading extends RecordState {
   @override
   List<Object> get props => [];
 }
-
-class RecordLoading extends RecordState {}
 
 class RecordLoadedSuccess extends RecordState {
   final List<Record> records;

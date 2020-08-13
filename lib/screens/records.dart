@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:gratitude/bloc/record_bloc.dart';
+import 'package:gratitude/cubit/record_cubit.dart';
 import 'package:gratitude/data/app_database.dart';
 import 'package:gratitude/screens/add_record.dart';
 import 'package:gratitude/styles.dart';
@@ -24,7 +24,7 @@ class RecordsScreen extends StatelessWidget {
             context: context,
             isScrollControlled: true,
             builder: (_) => AddRecordScreen((record) {
-              BlocProvider.of<RecordBloc>(context)..add(RecordAdded(record));
+              BlocProvider.of<RecordCubit>(context).addRecord(record);
             }),
           );
         },
@@ -60,16 +60,16 @@ class RecordsScreen extends StatelessWidget {
                     topLeft: Radius.circular(20),
                     topRight: Radius.circular(20)),
               ),
-              child: BlocBuilder<RecordBloc, RecordState>(
+              child: BlocBuilder<RecordCubit, RecordState>(
                 builder: (context, state) {
                   if (state is RecordLoading) {
                     return LoadingIndicator();
                   } else if (state is RecordLoadedSuccess) {
                     return _buildList(context, state.records);
                   } else if (state is RecordLoadedError) {
-                    return Center(child:Text('error'));
+                    return Center(child: Text('error'));
                   } else {
-                    return Center(child:Text('unknown state'));
+                    return Center(child: Text('unknown state'));
                   }
                 },
               ),

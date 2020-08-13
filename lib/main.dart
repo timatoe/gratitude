@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gratitude/bloc/simple_bloc_observer.dart';
-import 'package:gratitude/bloc/record_bloc.dart';
+import 'package:gratitude/cubit/record_cubit.dart';
 import 'package:gratitude/data/app_database.dart';
 import 'package:gratitude/screens/records.dart';
 
@@ -16,7 +16,7 @@ class GratitudeApp extends StatelessWidget {
     return MaterialApp(
       home: BlocProvider(
         create: (context) =>
-            RecordBloc(AppDatabase().recordDao)..add(GetRecords()),
+            RecordCubit(AppDatabase().recordDao)..getRecords(),
         child: RecordsScreen(),
       ),
       debugShowCheckedModeBanner: false,
