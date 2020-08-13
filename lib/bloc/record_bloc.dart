@@ -3,14 +3,15 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:gratitude/data/app_database.dart';
+import 'package:gratitude/data/record_repository.dart';
 
 part 'record_event.dart';
 part 'record_state.dart';
 
 class RecordBloc extends Bloc<RecordEvent, RecordState> {
-  final RecordDao recordDao;
+  final RecordRepository recordRepository;
 
-  RecordBloc(this.recordDao) : super(RecordLoading());
+  RecordBloc(this.recordRepository) : super(RecordLoading());
 
   @override
   Stream<RecordState> mapEventToState(
@@ -26,7 +27,7 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
   Stream<RecordState> _mapRecordsLoadedToState() async* {
     yield RecordLoading();
     try {
-      final records = await recordDao.getRecords();
+      final records = await recordRepository.getRecords();
       yield RecordLoadedSuccess(records);
     } on Exception {
       yield RecordLoadedError('');
@@ -38,7 +39,7 @@ class RecordBloc extends Bloc<RecordEvent, RecordState> {
       final List<Record> updatedRecords =
           List.from((state as RecordLoadedSuccess).records)..add(event.record);
       yield RecordLoadedSuccess(updatedRecords);
-      recordDao.insertRecord(event.record);
+      recordRepository.addRecord(event.record);
     }
   }
 }
